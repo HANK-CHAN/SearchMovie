@@ -77,19 +77,17 @@ public class MainActivity extends AppCompatActivity {
             String url ="https://movies.yahoo.com.tw/movie_thisweek.html";
             Document doc = Jsoup.connect(url).get();
 
-               Elements data = doc
-                       .select("ul.release_list")
-                       ;
-               for(Element element:data){
-                   String imgUrl = element
-                           .select("div.release_foto")
-                           .select("a.gabtn").select("img")
+               Elements imgUrlLink = doc.select("div.release_foto");
+               Elements titleLink = doc.select("div.release_info");
+               for(int j = 0 ; j < titleLink.size() ; j++){
+
+                   String imgUrl = imgUrlLink.get(j)
+                           .select("img")
                            .attr("src");
-                   String title = element
-                           .select("div.release_info")
-                           .select("div.release_info_text")
+                   String title = titleLink.get(j)
                            .select("div.release_movie_name")
-                           .select("a.gabtn").text();
+                           .select("a").first().text();
+
                    movieItems.add(new MovieItem(imgUrl,title));
                    Log.d("items","img"+imgUrl+".title"+title);
                }
