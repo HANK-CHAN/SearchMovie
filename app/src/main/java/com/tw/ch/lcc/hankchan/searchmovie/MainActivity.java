@@ -4,20 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,14 +29,13 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<MovieItem> movieItems = new ArrayList<>();
     private ProgressBar progressBar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Interest();
-
-
 
     }
     public void Interest(){
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         content.execute();
     }
 
-    private class Content extends AsyncTask<Void,Void,Void>{
+
+    class Content extends AsyncTask<Void,Void,Void>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -79,17 +81,26 @@ public class MainActivity extends AppCompatActivity {
 
                Elements imgUrlLink = doc.select("div.release_foto");
                Elements titleLink = doc.select("div.release_info");
+
                for(int j = 0 ; j < titleLink.size() ; j++){
 
                    String imgUrl = imgUrlLink.get(j)
                            .select("img")
-                           .attr("src");
+                           .attr("data-src");
+                   String date = titleLink.get(j)
+                           .select("div.release_movie_time")
+                           .text();
+                   String story = titleLink.get(j)
+                           .select("div.release_text")
+                           .text();
                    String title = titleLink.get(j)
                            .select("div.release_movie_name")
                            .select("a").first().text();
+                   String link = imgUrlLink.get(j).select("a").attr("href");
 
-                   movieItems.add(new MovieItem(imgUrl,title));
-                   Log.d("items","img"+imgUrl+".title"+title);
+                   movieItems.add(new MovieItem(imgUrl,title,link,date,story));
+                   Log.d("items","data" +date+"story"+story);
+
                }
            } catch (IOException e) {
                e.printStackTrace();
@@ -99,3 +110,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
